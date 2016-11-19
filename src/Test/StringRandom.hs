@@ -18,13 +18,18 @@ import Data.Attoparsec.Text
   )
 import qualified Data.Text as Text
 import Control.Applicative ((<|>), optional, many)
+import Control.Monad.Trans.Class (lift)
+import Control.Monad.Trans.State.Strict (evalStateT, StateT, gets, put)
+
+-- Int :: A sequence number of groups (X)
+type RegParser a = StateT Int Attoparsec.Parser a
 
 data Parsed  = PClass   [Char]               -- [abc]
              | PNClass  [Char]               -- [^abc]
              | PRange Int (Maybe Int) Parsed -- X*, X{1,2}, X+, X?
              | PConcat [Parsed]              -- XYZ
              | PSelect [Parsed]              -- X|Y|Z
-             | PGrouped Parsed               -- (X)
+             | PGrouped Int Parsed           -- (X)
              | PIgnored                      -- ^, $, \b
              deriving (Show, Eq)
 
@@ -37,17 +42,18 @@ pSelect [x] = x
 pSelect xs  = PSelect xs
 
 processParse :: Text.Text -> Either String Parsed
-processParse = Attoparsec.parseOnly (selectParser <* endOfInput)
+processParse = let p = evalStateT selectParser 0
+               in Attoparsec.parseOnly (p <* endOfInput)
 
-selectParser :: Attoparsec.Parser Parsed
+selectParser :: RegParser Parsed
 selectParser = do
   p0 <- concats
-  ps <- many (char '|' *> concats)
+  ps <- many (lift (char '|') *> concats)
   return $ pSelect (p0:ps)
   where
     concats = pConcat <$> many rangedParser
 
-rangedParser :: Attoparsec.Parser Parsed
+rangedParser :: RegParser Parsed
 rangedParser = do
   p <- groupingParser
   let opt  = char '?' *> return (PRange 0 (Just 1) p)
@@ -68,25 +74,30 @@ rangedParser = do
                     [] -> Nothing
                     _  -> Just $ read max'
         return $ PRange 0 max p
-  opt <|> star <|> plus <|> rep <|> return p
+  lift $ opt <|> star <|> plus <|> rep <|> return p
 
-groupingParser :: Attoparsec.Parser Parsed
-groupingParser = group <|> classParser <|> escaped <|> dot <|> ignored <|> others
+groupingParser :: RegParser Parsed
+groupingParser = ngroup <|> group <|> classParser <|> escaped <|> dot <|> ignored <|> others
   where
-    openParen = (string "(?:" *> return ()) <|> (char '(' *> return ())
-    group   = PGrouped         <$> (openParen *> selectParser <* char ')')
-    escaped = do
+    ngroup  = lift (string "(?:") *> selectParser <* lift (char ')')
+    group   = do
+      n <- gets (+ 1)
+      put n
+      p <- lift (char '(') *> selectParser <* lift (char ')')
+      return $ PGrouped n p
+    escaped = lift $ do
       ch <- char '\\' *> anyChar
       return $ case ch of
         'b' -> PIgnored -- Don't support \b
         _   -> PClass (classes ch)
-    dot     = char '.' *> return (PClass allC)
-    ignored = satisfy (`elem` ['^', '$']) *> return PIgnored
-    others  = PClass . (: [])  <$> satisfy (`notElem` reservedChars)
+    dot     = lift $ char '.' *> return (PClass allC)
+    ignored = lift $ satisfy (`elem` ['^', '$']) *> return PIgnored
+    others  = lift $ PClass . (: [])  <$> satisfy (`notElem` reservedChars)
 
-classParser :: Attoparsec.Parser Parsed
-classParser =  PNClass <$> (string "[^" *> p <* char ']')
-           <|> PClass  <$> (char '[' *> p <* char ']')
+classParser :: RegParser Parsed
+classParser = lift $
+      PNClass <$> (string "[^" *> p <* char ']')
+  <|> PClass  <$> (char '[' *> p <* char ']')
   where
     p :: Attoparsec.Parser [Char]
     p = concat <$> many p1
