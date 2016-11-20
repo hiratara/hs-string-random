@@ -1,16 +1,15 @@
 name:                string-random
 version:             0.1.0.0
-synopsis:            Initial project template from stack
+synopsis:            A library for generating random string from a regular experession
 description:         Please see README.md
-homepage:            https://github.com/githubuser/string-random#readme
+homepage:            https://github.com/hiratara/hs-string-random#readme
 license:             BSD3
 license-file:        LICENSE
-author:              Author name here
-maintainer:          example@example.com
-copyright:           2016 Author name here
-category:            Web
+author:              Masahiro Honma
+maintainer:          hiratara@cpan.org
+copyright:           Copyright (C) 2016- hiratara
+category:            Text
 build-type:          Simple
--- extra-source-files:
 cabal-version:       >=1.10
 
 library
@@ -36,4 +35,4 @@ test-suite string-random-test
 
 source-repository head
   type:     git
-  location: https://github.com/githubuser/string-random
+  location: https://github.com/hiratara/hs-string-random

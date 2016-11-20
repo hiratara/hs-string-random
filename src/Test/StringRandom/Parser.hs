@@ -1,6 +1,19 @@
+{-|
+Module      : Test.StringRandom.Parser
+Description : Simple regular expression parser
+Copyright   : Copyright (C) 2016- hiratara
+License     : GPL-3
+Maintainer  : hiratara@cpan.org
+Stability   : experimental
+
+Parse the regular expression so that it can be used with the
+"Test.StringRandom" module.
+
+See <https://github.com/cho45/String_random.js/blob/master/lib/String_random.js String_random.js>
+-}
+
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE Strict #-}
--- https://github.com/cho45/String_random.js/blob/master/lib/String_random.js
 module Test.StringRandom.Parser
   ( Parsed(..)
   , processParse
@@ -25,13 +38,14 @@ import Control.Monad.Trans.State.Strict (evalStateT, StateT, gets, put)
 -- Int :: A sequence number of groups (X)
 type RegParser a = StateT Int Attoparsec.Parser a
 
-data Parsed  = PClass   [Char]               -- [abc], \d, [^abc]
-             | PRange Int (Maybe Int) Parsed -- X*, X{1,2}, X+, X?
-             | PConcat [Parsed]              -- XYZ
-             | PSelect [Parsed]              -- X|Y|Z
-             | PGrouped Int Parsed           -- (X)
-             | PBackward Int                 -- \1, \2, ..., \9
-             | PIgnored                      -- ^, $, \b
+-- | Abstract syntax tree of parsed regular expression
+data Parsed  = PClass   [Char]               -- ^ [abc], \d, [^abc]
+             | PRange Int (Maybe Int) Parsed -- ^ X*, X{1,2}, X+, X?
+             | PConcat [Parsed]              -- ^ XYZ
+             | PSelect [Parsed]              -- ^ X|Y|Z
+             | PGrouped Int Parsed           -- ^ (X)
+             | PBackward Int                 -- ^ \1, \2, ..., \9
+             | PIgnored                      -- ^ ^, $, \b
              deriving (Show, Eq)
 
 pConcat :: [Parsed] -> Parsed
@@ -42,6 +56,11 @@ pSelect :: [Parsed] -> Parsed
 pSelect [x] = x
 pSelect xs  = PSelect xs
 
+{-|
+'processParse' parses the regular expression string and returns an abstract
+syntax tree. If there is an error in the regular expression, it returns the
+'Left' value.
+-}
 processParse :: Text.Text -> Either String Parsed
 processParse = let p = evalStateT selectParser 0
                in Attoparsec.parseOnly (p <* endOfInput)
