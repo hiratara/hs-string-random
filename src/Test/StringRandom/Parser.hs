@@ -16,6 +16,7 @@ import Data.Attoparsec.Text
   , many1
   , endOfInput
   )
+import Data.List ((\\))
 import qualified Data.Text as Text
 import Control.Applicative ((<|>), optional, many)
 import Control.Monad.Trans.Class (lift)
@@ -24,12 +25,12 @@ import Control.Monad.Trans.State.Strict (evalStateT, StateT, gets, put)
 -- Int :: A sequence number of groups (X)
 type RegParser a = StateT Int Attoparsec.Parser a
 
-data Parsed  = PClass   [Char]               -- [abc]
-             | PNClass  [Char]               -- [^abc]
+data Parsed  = PClass   [Char]               -- [abc], \d, [^abc]
              | PRange Int (Maybe Int) Parsed -- X*, X{1,2}, X+, X?
              | PConcat [Parsed]              -- XYZ
              | PSelect [Parsed]              -- X|Y|Z
              | PGrouped Int Parsed           -- (X)
+             | PBackward Int                 -- \1, \2, ..., \9
              | PIgnored                      -- ^, $, \b
              deriving (Show, Eq)
 
@@ -88,15 +89,16 @@ groupingParser = ngroup <|> group <|> classParser <|> escaped <|> dot <|> ignore
     escaped = lift $ do
       ch <- char '\\' *> anyChar
       return $ case ch of
-        'b' -> PIgnored -- Don't support \b
-        _   -> PClass (classes ch)
+        _ | ch == 'b'              -> PIgnored -- Don't support \b
+          | ch `elem` ['1' .. '9'] -> PBackward (read [ch])
+          | otherwise              -> PClass (classes ch)
     dot     = lift $ char '.' *> return (PClass allC)
     ignored = lift $ satisfy (`elem` ['^', '$']) *> return PIgnored
     others  = lift $ PClass . (: [])  <$> satisfy (`notElem` reservedChars)
 
 classParser :: RegParser Parsed
 classParser = lift $
-      PNClass <$> (string "[^" *> p <* char ']')
+      PClass . (allC \\) <$> (string "[^" *> p <* char ']')
   <|> PClass  <$> (char '[' *> p <* char ']')
   where
     p :: Attoparsec.Parser [Char]
