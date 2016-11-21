@@ -79,21 +79,16 @@ rangedParser = do
   let opt  = char '?' *> return (PRange 0 (Just 1) p)
       star = char '*' *> return (PRange 0 Nothing p)
       plus = char '+' *> return (PRange 1 Nothing p)
-      rep = char '{' *> (rep1 <|> rep2) <* char '}'
-      rep1 = do
+      rep = do
+        char '{'
         min  <- read <$> many1 digit
         max' <- optional $ char ',' *> many digit
         let max = case max' of
                     Nothing -> Just min
                     Just [] -> Nothing
                     Just ds -> Just $ read ds
+        char '}'
         return $ PRange min max p
-      rep2 = do
-        max' <- char ',' *> many digit
-        let max = case max' of
-                    [] -> Nothing
-                    _  -> Just $ read max'
-        return $ PRange 0 max p
   lift $ opt <|> star <|> plus <|> rep <|> return p
 
 groupingParser :: RegParser Parsed

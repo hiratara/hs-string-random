@@ -35,8 +35,6 @@ testParser = HUnit.testCase "Test parsers" $ do
                                        1 Nothing (Parser.PClass "a"))
   Parser.processParse "a{3}" @?= Right (Parser.PRange
                                          3 (Just 3) (Parser.PClass "a"))
-  Parser.processParse "a{,3}" @?= Right (Parser.PRange
-                                          0 (Just 3) (Parser.PClass "a"))
   Parser.processParse "a{1,}" @?= Right (Parser.PRange
                                           1 Nothing (Parser.PClass "a"))
   Parser.processParse "a{1,3}" @?= Right (Parser.PRange
@@ -90,7 +88,6 @@ testStringRandom = HUnit.testCase "Test stringRandomIO" $ do
         , "a*"
         , "a+"
         , "a{4}"
-        -- , "a{,2}"
         , "a{2,}"
         , "a{2,4}"
         , "abc"
