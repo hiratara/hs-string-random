@@ -15,8 +15,8 @@ tested-with:         GHC ==8.0.1
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Test.StringRandom
-                     , Test.StringRandom.Parser
+  exposed-modules:     Text.StringRandom
+                     , Text.StringRandom.Parser
   build-depends:       base >= 4.9 && < 5
                      , attoparsec >=0.13.1 && <0.14
                      , containers >=0.5.7.1 && <0.6

@@ -1,5 +1,5 @@
 {-|
-Module      : Test.StringRandom
+Module      : Text.StringRandom
 Description : generating random string from a regexp
 Copyright   : Copyright (C) 2016- hiratara
 License     : GPL-3
@@ -11,7 +11,7 @@ This library ported String_random.js to Haskell.
 
 @
     {-# LANGUAGE OverloadedStrings #-}
-    import Test.StringRandom
+    import Text.StringRandom
 
     main = do
       ymd <- stringRandomIO "20\\d\\d-(1[0-2]|0[1-9])-(0[1-9]|1\\d|2[0-8])"
@@ -31,7 +31,7 @@ following respects.
 
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE Strict #-}
-module Test.StringRandom
+module Text.StringRandom
   ( stringRandomIO
   , stringRandom
   , stringRandomWithError
@@ -40,7 +40,7 @@ module Test.StringRandom
 import qualified Data.IntMap.Strict as Map
 import qualified Data.Text as Text
 import qualified System.Random as Random
-import qualified Test.StringRandom.Parser as Parser
+import qualified Text.StringRandom.Parser as Parser
 import qualified Control.Monad.Trans.RWS.Strict as RWS
 
 -- Int: size, g: generater, IntMap: Record backrefs
