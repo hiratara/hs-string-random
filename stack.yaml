@@ -1,6 +1,6 @@
 resolver: lts-7.9
 packages:
-  - '.'
+  - 'core'
 
 nix:
   enable: false
