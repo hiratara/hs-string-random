@@ -1,4 +1,4 @@
-random-string
+string-random
 =============
 
 ## Description
