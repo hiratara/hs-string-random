@@ -1,6 +1,7 @@
 resolver: lts-7.9
 packages:
-  - '.'
+  - 'core'
+  - 'quickcheck'
 
 nix:
   enable: false

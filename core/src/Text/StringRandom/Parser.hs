@@ -1,5 +1,5 @@
 {-|
-Module      : Test.StringRandom.Parser
+Module      : Text.StringRandom.Parser
 Description : Simple regular expression parser
 Copyright   : Copyright (C) 2016- hiratara
 License     : GPL-3
@@ -7,14 +7,14 @@ Maintainer  : hiratara@cpan.org
 Stability   : experimental
 
 Parse the regular expression so that it can be used with the
-"Test.StringRandom" module.
+"Text.StringRandom" module.
 
 See <https://github.com/cho45/String_random.js/blob/master/lib/String_random.js String_random.js>
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE Strict #-}
-module Test.StringRandom.Parser
+module Text.StringRandom.Parser
   ( Parsed(..)
   , processParse
   ) where

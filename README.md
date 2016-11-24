@@ -9,7 +9,7 @@ This package is a Haskell port of [String_random.js library](https://github.com/
 
 ```haskell
 {-# LANGUAGE OverloadedStrings #-}
-import Test.StringRandom
+import Text.StringRandom
 
 main = do
   ymd <- stringRandomIO "20\\d\\d-(1[0-2]|0[1-9])-(0[1-9]|1\\d|2[0-8])"

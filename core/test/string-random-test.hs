@@ -5,8 +5,8 @@ import Data.Monoid ((<>))
 import qualified Data.ByteString as ByteString
 import qualified Data.Text.Encoding as Encoding
 import Control.Monad (forM_)
-import qualified Test.StringRandom as StringRandom
-import qualified Test.StringRandom.Parser as Parser
+import qualified Text.StringRandom as StringRandom
+import qualified Text.StringRandom.Parser as Parser
 import qualified Test.Tasty as Tasty
 import qualified Test.Tasty.HUnit as HUnit
 import Test.Tasty.HUnit ((@?=), (@?))

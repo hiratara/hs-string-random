@@ -6,7 +6,7 @@ import Data.Text.Encoding (encodeUtf8)
 import qualified Test.QuickCheck as QC
 import qualified Test.QuickCheck.Gen as QC
 import qualified Test.QuickCheck.Random as QC
-import qualified Test.StringRandom as StringRandom
+import qualified Text.StringRandom as StringRandom
 import qualified Test.Tasty as Tasty
 import qualified Test.Tasty.QuickCheck as TastyQC
 import Text.Regex.PCRE.Heavy (compileM, (=~))
