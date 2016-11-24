@@ -1,7 +1,9 @@
 name:                string-random
 version:             0.1.0.0
 synopsis:            A library for generating random string from a regular experession
-description:         Please see README.md
+description:         With this package you can generate random strings from
+                     regular expressions. If you are using QuickCheck, you can
+                     also check the quickcheck-string-random package.
 homepage:            https://github.com/hiratara/hs-string-random#readme
 license:             BSD3
 license-file:        LICENSE

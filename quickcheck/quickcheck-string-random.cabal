@@ -1,7 +1,9 @@
 name:                quickcheck-string-random
 version:             0.1.0.0
 synopsis:            Helper to build generators with Text.StringRandom
-description:         Please see README.md
+description:         Define a generator of Text that matches regular
+                     expressions. This package is useful for creating Arbitrary
+                     instances of Text type restricted by newtype.
 homepage:            https://github.com/hiratara/hs-string-random#readme
 license:             BSD3
 license-file:        LICENSE
