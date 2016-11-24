@@ -8,6 +8,25 @@ Stability   : experimental
 
 A text generator that generates a string that matches a regular expression.
 
+@
+    {-# LANGUAGE OverloadedStrings #-}
+    import qualified Test.QuickCheck as QC
+    import Test.QuickCheck.StringRandom (matchRegexp)
+
+    prop_generateDigit :: QC.Property
+    prop_generateDigit = QC.forAll (matchRegexp "\\d") $ \digit -> ...
+
+    -- or
+
+    newtype Upper = Upper Text.Text deriving (Eq, Show)
+
+    instance QC.Arbitrary Upper where
+      arbitrary = Upper <$> matchRegexp "[A-Z]"
+
+    prop_generateUpper :: Upper -> Bool
+    prop_generateUpper (Upper upper) = ...
+@
+
 The shrink function has not been defined yet.
 -}
 
