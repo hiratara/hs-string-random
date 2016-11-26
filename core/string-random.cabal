@@ -27,6 +27,16 @@ library
                      , transformers >=0.5.2.0 && <0.6
   default-language:    Haskell2010
 
+executable hstrrand
+  hs-source-dirs:      app
+  main-is:             hstrrand.hs
+  build-depends:       base >=4.9 && <5
+                     , optparse-applicative
+                     , string-random
+                     , text
+  ghc-options:         -O2 -threaded -Wall
+  default-language:    Haskell2010
+
 test-suite string-random-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
