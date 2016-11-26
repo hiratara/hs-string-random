@@ -77,7 +77,7 @@ stringRandomWithError g txt = do
   let (ret, _) = RWS.evalRWS (str parsed) 10 (g, Map.empty)
   return ret
 
-withGen :: Random.RandomGen g => (g -> (a, g)) -> GenRWS g a
+withGen :: (g -> (a, g)) -> GenRWS g a
 withGen f = do
   (gen, m) <- RWS.get
   let (a, gen') = f gen
