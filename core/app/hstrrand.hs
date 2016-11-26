@@ -6,6 +6,7 @@ import qualified Options.Applicative as Options
 import qualified Data.Text as Text
 import qualified Data.Text.IO as Text
 import qualified Text.StringRandom as StringRandom
+import qualified System.Random.PCG as PCG
 
 argParser :: Options.Parser Text.Text
 argParser = Text.pack <$> Options.strArgument
@@ -16,7 +17,8 @@ argParser = Text.pack <$> Options.strArgument
 main :: IO ()
 main = do
   pat <- Options.execParser opts
-  txt <- StringRandom.stringRandomIO pat
+  gen <- PCG.save =<< PCG.createSystemRandom
+  let txt = StringRandom.stringRandom gen pat
   Text.putStrLn txt
   where
     opts = Options.info (Options.helper <*> argParser)

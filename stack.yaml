@@ -2,6 +2,8 @@ resolver: lts-7.9
 packages:
   - 'core'
   - 'quickcheck'
+extra-deps:
+  - pcg-random-0.1.3.4
 
 nix:
   enable: false

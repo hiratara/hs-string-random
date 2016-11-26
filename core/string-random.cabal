@@ -32,6 +32,7 @@ executable hstrrand
   main-is:             hstrrand.hs
   build-depends:       base >=4.9 && <5
                      , optparse-applicative
+                     , pcg-random >=0.1.3.4 && <0.2
                      , string-random
                      , text
   ghc-options:         -O2 -threaded -Wall
