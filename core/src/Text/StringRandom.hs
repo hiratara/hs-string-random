@@ -38,13 +38,16 @@ module Text.StringRandom
   ) where
 
 import qualified Data.IntMap.Strict as Map
+import Data.Monoid ((<>))
 import qualified Data.Text as Text
+import qualified Data.Text.Lazy as LazyText
+import qualified Data.Text.Lazy.Builder as Builder
 import qualified System.Random as Random
 import qualified Text.StringRandom.Parser as Parser
 import qualified Control.Monad.Trans.RWS.Strict as RWS
 
 -- Int: size, g: generater, IntMap: Record backrefs
-type GenRWS g = RWS.RWS Int () (g, Map.IntMap Text.Text)
+type GenRWS g = RWS.RWS Int () (g, Map.IntMap Builder.Builder)
 
 {-|
 The 'stringRandomIO' function generates random strings that match the given
@@ -75,7 +78,7 @@ stringRandomWithError g txt = do
   parsed <- Parser.processParse txt
   -- 10 : max length of a* or a+
   let (ret, _) = RWS.evalRWS (str parsed) 10 (g, Map.empty)
-  return ret
+  return . LazyText.toStrict . Builder.toLazyText $ ret
 
 withGen :: (g -> (a, g)) -> GenRWS g a
 withGen f = do
@@ -101,13 +104,13 @@ choice xs = do
   i <- randomRIntM (0, length xs - 1)
   return $ xs !! i
 
-putGroup :: Int -> Text.Text -> GenRWS g ()
+putGroup :: Int -> Builder.Builder -> GenRWS g ()
 putGroup n v = do
   (gen, m) <- RWS.get
   let m' = Map.insert n v m
   RWS.put (gen, m')
 
-getGroup :: Int -> GenRWS g Text.Text
+getGroup :: Int -> GenRWS g Builder.Builder
 getGroup n = do
   m <- RWS.gets snd
   let maybeV = Map.lookup n m
@@ -118,15 +121,15 @@ getGroup n = do
 size :: GenRWS g Int
 size = RWS.ask
 
-str :: Random.RandomGen g => Parser.Parsed -> GenRWS g Text.Text
-str (Parser.PClass cs) = Text.singleton <$> choice cs
+str :: Random.RandomGen g => Parser.Parsed -> GenRWS g Builder.Builder
+str (Parser.PClass cs) = Builder.singleton <$> choice cs
 str (Parser.PRange s me p) = do
   e <- case me of
     Just e' -> return e'
     Nothing -> size
   n <- randomRIntM (s, e)
-  Text.concat <$> mapM (const $ str p) [1 .. n]
-str (Parser.PConcat ps) = Text.concat <$> mapM str ps
+  foldr1 (<>) <$> mapM (const $ str p) [1 .. n]
+str (Parser.PConcat ps) = foldr1 (<>) <$> mapM str ps
 str (Parser.PSelect ps) = str =<< choice ps
 str (Parser.PGrouped n p) = do
   v <- str p
