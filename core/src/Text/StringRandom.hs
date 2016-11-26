@@ -84,15 +84,21 @@ withGen f = do
   RWS.put (gen', m)
   return a
 
-randomRM :: (Random.RandomGen g, Random.Random a) => (a, a) -> GenRWS g a
-randomRM = withGen . Random.randomR
+-- randomRM :: (Random.RandomGen g, Random.Random a) => (a, a) -> GenRWS g a
+-- randomRM = withGen . Random.randomR
 
 -- randomM :: (Random.RandomGen g, Random.Random a) => GenRWS g a
 -- randomM = withGen Random.random
 
+randomRIntM :: (Random.RandomGen g) => (Int, Int) -> GenRWS g Int
+randomRIntM (s, e) = withGen $ \g ->
+  let (n, g') = Random.next g
+      d = n `mod` (e - s + 1)
+  in (s + d, g')
+
 choice :: Random.RandomGen g => [a] -> GenRWS g a
 choice xs = do
-  i <- randomRM (0, length xs - 1)
+  i <- randomRIntM (0, length xs - 1)
   return $ xs !! i
 
 putGroup :: Int -> Text.Text -> GenRWS g ()
@@ -118,7 +124,7 @@ str (Parser.PRange s me p) = do
   e <- case me of
     Just e' -> return e'
     Nothing -> size
-  n <- randomRM (s, e)
+  n <- randomRIntM (s, e)
   Text.concat <$> mapM (const $ str p) [1 .. n]
 str (Parser.PConcat ps) = Text.concat <$> mapM str ps
 str (Parser.PSelect ps) = str =<< choice ps
