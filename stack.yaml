@@ -4,7 +4,6 @@ packages:
   - 'quickcheck'
 
 nix:
-  enable: false
   packages:
     - pcre
     - pkgconfig
