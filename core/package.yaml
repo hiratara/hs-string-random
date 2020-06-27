@@ -1,5 +1,5 @@
 name: string-random
-version: 0.1.2.0
+version: 0.1.3.0
 synopsis: A library for generating random string from a regular experession
 description: ! 'With this package you can generate random strings from
 
