@@ -1,6 +1,8 @@
 string-random
 =============
 
+![Haskell CI](https://github.com/hiratara/hs-string-random/workflows/Haskell%20CI/badge.svg)
+
 ## Description
 
 This package is a Haskell port of [String_random.js library](https://github.com/cho45/String_random.js). There are implementations of [Perl](https://metacpan.org/pod/String::Random), [golang](https://github.com/Songmu/strrand), and [Java](https://github.com/moznion/java-random-string) as implementations of other languages.
