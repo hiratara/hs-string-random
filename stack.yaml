@@ -1,9 +1,0 @@
-resolver: lts-16.19
-packages:
-  - 'core'
-  - 'quickcheck'
-
-nix:
-  packages:
-    - pcre
-    - pkgconfig
