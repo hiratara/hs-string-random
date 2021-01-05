@@ -12,7 +12,7 @@ import qualified Test.Tasty.QuickCheck as TastyQC
 import Text.Regex.PCRE.Heavy (compileM, (=~))
 
 regexp :: QC.Gen Text.Text
-regexp = QC.MkGen $ \(QC.QCGen g) _ -> StringRandom.stringRandom g regregexp
+regexp = QC.MkGen $ \g _ -> StringRandom.stringRandom g regregexp
   where regregexp = "((\\w|" <> classes <> "|\\(\\w+\\))(\\{[0-4],[5-9]\\}|\\*|\\+|))*"
         classes = "\\[^?(\\w|" <> escaped <> "|a-z)+-?\\]"
         escaped = "\\\\[dDwWsSnr\\[\\]|.(){}^$-]"

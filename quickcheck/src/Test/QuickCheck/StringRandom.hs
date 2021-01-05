@@ -42,4 +42,4 @@ import qualified Text.StringRandom as StringRandom
 -- | The 'matchRegexp pat' defines a generator that produces a text that
 -- | matches a regular expression 'pat'
 matchRegexp :: Text.Text -> QC.Gen Text.Text
-matchRegexp txt = QC.MkGen $ \(QC.QCGen g) _ -> StringRandom.stringRandom g txt
+matchRegexp txt = QC.MkGen $ \g _ -> StringRandom.stringRandom g txt
