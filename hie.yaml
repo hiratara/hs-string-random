@@ -6,10 +6,10 @@ cradle:
     - path: "core/app/hstrrand.hs"
       component: "string-random:exe:hstrrand"
 
-    - path: "core/test"
+    - path: "core/test/string-random-quickcheck.hs"
       component: "string-random:test:string-random-quickcheck"
 
-    - path: "core/test"
+    - path: "core/test/string-random-test.hs"
       component: "string-random:test:string-random-test"
 
     - path: "quickcheck/src"
