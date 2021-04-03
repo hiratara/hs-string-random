@@ -1,8 +1,11 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE Strict #-}
 
 module Main (main) where
 
+#if ! MIN_VERSION_base(4,8,0)
 import Data.Monoid ((<>))
+#endif
 import qualified Data.Text as Text
 import qualified Data.Text.IO as Text
 import qualified Options.Applicative as Options
