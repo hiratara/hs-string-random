@@ -1,6 +1,6 @@
 cabal-version: 1.12
 name:          quickcheck-string-random
-version:       0.1.4.0
+version:       0.1.4.2
 synopsis:      Helper to build generators with Text.StringRandom
 description:
   Define a generator of Text that matches regular
