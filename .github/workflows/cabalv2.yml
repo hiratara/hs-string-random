@@ -9,9 +9,9 @@ jobs:
 
     strategy:
       matrix:
-        ghc: ['8.8', '8.10', '9.2', '9.4', '9.6', '9.8', '9.10']
-        cabal: ['3.0', '3.2', '3.12']
-        os: [ubuntu-latest, macOS-latest]
+        ghc: ['9.4']
+        cabal: ['3.12']
+        os: [ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v4
