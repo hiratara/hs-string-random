@@ -1,6 +1,6 @@
 cabal-version: 1.12
 name:          string-random
-version:       0.1.4.3
+version:       0.1.4.4
 synopsis:
   A library for generating random string from a regular experession
 
@@ -17,7 +17,6 @@ maintainer:    hiratara@cpan.org
 copyright:     Copyright (C) 2016- hiratara
 license:       BSD3
 license-file:  LICENSE
-tested-with:   GHC ==8.10.3
 build-type:    Simple
 
 source-repository head
