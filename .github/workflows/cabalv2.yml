@@ -2,41 +2,71 @@ name: Haskell CI
 
 on: [push]
 
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
-
+    name: GHC ${{ matrix.ghc-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-
     strategy:
+      fail-fast: false
       matrix:
-        ghc: ['9.4']
-        cabal: ['3.12']
         os: [ubuntu-latest]
+        ghc-version: ['9.12', '9.10', '9.8', '9.6']
 
     steps:
     - uses: actions/checkout@v4
-    - uses: haskell-actions/setup@v2
-      with:
-        ghc-version: ${{ matrix.ghc }}
-        cabal-version: ${{ matrix.cabal }}
 
-    - name: Cache
-      uses: actions/cache@v4
-      env:
-        cache-name: cache-cabal
+    - name: Set up GHC ${{ matrix.ghc-version }}
+      uses: haskell-actions/setup@v2
+      id: setup
       with:
-        path: ~/.cabal
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.cabal') }}-${{ hashFiles('**/cabal.project') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
+        ghc-version: ${{ matrix.ghc-version }}
+        cabal-version: 'latest'
+        cabal-update: true
+
+    - name: Configure the build
+      run: |
+        cabal configure --enable-tests --enable-benchmarks --disable-documentation
+        cabal build all --dry-run
+
+    - name: Restore cached dependencies
+      uses: actions/cache/restore@v4
+      id: cache
+      env:
+        key: ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-cabal-${{ steps.setup.outputs.cabal-version }}
+      with:
+        path: ${{ steps.setup.outputs.cabal-store }}
+        key: ${{ env.key }}-plan-${{ hashFiles('**/plan.json') }}
+        restore-keys: ${{ env.key }}-
 
     - name: Install dependencies
-      run: |
-        cabal update
-        cabal v2-build --only-dependencies --enable-tests --enable-benchmarks all
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: cabal build all --only-dependencies
+
+    - name: Save cached dependencies
+      uses: actions/cache/save@v4
+      if: steps.cache.outputs.cache-hit != 'true'
+      with:
+        path: ${{ steps.setup.outputs.cabal-store }}
+        key: ${{ steps.cache.outputs.cache-primary-key }}
+
     - name: Build
-      run: cabal v2-build --enable-tests --enable-benchmarks all
+      run: cabal build all
+
     - name: Run tests
-      run: cabal v2-test all
+      run: cabal test all
+
+    - name: Check cabal file
+      run: |
+        for dir in */; do
+          if ls "$dir"/*.cabal >/dev/null 2>&1; then
+            echo "Running cabal check in $dir"
+            (cd "$dir" && cabal check)
+          fi
+        done
+
+    - name: Build documentation
+      run: cabal haddock all
