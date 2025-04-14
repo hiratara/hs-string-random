@@ -1,6 +1,6 @@
 cabal-version: 1.12
 name:          string-random
-version:       0.1.4.4
+version:       0.1.4.5
 synopsis:
   A library for generating random string from a regular experession
 
